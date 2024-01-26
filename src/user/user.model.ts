@@ -1,9 +1,10 @@
-export class CreateUserDto {
+export interface User {
+    id: number;
     name?: string;
     email?: string;
     password?: string;
-    created_at?: Date;
-    updated_at?: Date;
+    createdAt?: Date;
+    updatedAt?: Date;
     active?: boolean;
     firstname?: string;
     lastname?: string;
@@ -16,6 +17,7 @@ export class CreateUserDto {
     city?: string;
     state?: string;
     country?: string;
+    auth?: Auth[];
 }
 
 export interface Auth {

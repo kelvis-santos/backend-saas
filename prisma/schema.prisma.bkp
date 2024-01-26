@@ -1,0 +1,119 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model users {
+  id         Int       @id @default(autoincrement())
+  name       String?   @db.VarChar(255)
+  email      String?   @unique @db.VarChar(255)
+  password   String?   @db.VarChar(255)
+  created_at DateTime? @default(now()) @db.Timestamptz(6)
+  updated_at DateTime? @default(now()) @db.Timestamptz(6)
+  active     Boolean?
+  firstname  String?   @db.VarChar(255)
+  lastname   String?   @db.VarChar(255)
+  birthdate  DateTime? @db.Date
+  phone      String?   @db.VarChar(20)
+  phone2     String?   @db.VarChar(20)
+  zip        String?   @db.VarChar(10)
+  number     Int?
+  address    String?   @db.VarChar(255)
+  city       String?   @db.VarChar(255)
+  state      String?   @db.VarChar(255)
+  country    String?   @db.VarChar(255)
+}
+
+model schedule {
+  id           Int       @id @default(autoincrement())
+  attendant_id Int
+  client_id    Int
+  date         DateTime
+  location     String?
+  observation  String?
+  service_id   Int
+  invoice_id   Int
+  created_at   DateTime @default(now())
+  updated_at   DateTime @default(now())
+}
+
+model customer {
+  id         Int       @id @default(autoincrement())
+  firstname  String?   @db.VarChar(255)
+  lastname   String?   @db.VarChar(255)
+  email      String?   @unique @db.VarChar(255)
+  phone      String?   @db.VarChar(20)
+  address    String?   @db.VarChar(255)
+  city       String?   @db.VarChar(255)
+  state      String?   @db.VarChar(255)
+  country    String?   @db.VarChar(255)
+  created_at DateTime? @default(now()) @db.Timestamptz(6)
+  updated_at DateTime? @default(now()) @db.Timestamptz(6)
+}
+
+model auth {
+  id         Int       @id @default(autoincrement())
+  user_id    Int       @relation(fields: [user_id], references: [id])
+  email      String?   @db.VarChar(255)
+  token      String?   @unique @db.VarChar(255)
+  created_at DateTime? @default(now()) @db.Timestamptz(6)
+  expires_at DateTime? @db.Timestamptz(6)
+  revoked    Boolean?  @default(false)
+
+  user       users     @relation(fields: [user_id], references: [id])
+}
+
+model service {
+  id         Int       @id @default(autoincrement())
+  name       String?   @db.VarChar(255)
+  teeth      String?   @db.VarChar(255)
+  invoice_id Int
+  created_at DateTime? @default(now()) @db.Timestamptz(6)
+  updated_at DateTime? @default(now()) @db.Timestamptz(6)
+
+  sessions   service_session[]
+}
+
+model service_session {
+  id          Int       @id @default(autoincrement())
+  service_id  Int
+  date        DateTime? @db.Timestamptz(6)
+  description String?   @db.VarChar(255)
+
+  service     service   @relation(fields: [service_id], references: [id])
+}
+
+model invoice {
+  id          Int       @id @default(autoincrement())
+  service_id  Int
+  amount      Float
+  paid        Boolean?  @default(false)
+  created_at  DateTime? @default(now()) @db.Timestamptz(6)
+  updated_at  DateTime? @default(now()) @db.Timestamptz(6)
+
+  service     service   @relation(fields: [service_id], references: [id])
+  payments    payment[]
+}
+
+model payment {
+  id          Int       @id @default(autoincrement())
+  invoice_id  Int
+  amount      Float
+  due_date    DateTime? @db.Timestamptz(6)
+  paid_at     DateTime? @db.Timestamptz(6)
+
+  invoice     invoice   @relation(fields: [invoice_id], references: [id])
+}
+
+model expense {
+  id          Int       @id @default(autoincrement())
+  description String?   @db.VarChar(255)
+  amount      Float
+  date        DateTime? @db.Timestamptz(6)
+  created_at  DateTime? @default(now()) @db.Timestamptz(6)
+  updated_at  DateTime? @default(now()) @db.Timestamptz(6)
+}
